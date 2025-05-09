@@ -27,11 +27,43 @@ class NuruominoState:
 class Board:
     """Representação interna de um tabuleiro do Puzzle Nuruomino."""
 
-    def adjacent_regions(self, region:int) -> list:
-        """Devolve uma lista das regiões que fazem fronteira com a região enviada no argumento."""
-        #TODO
+    def __init__(self, matrix):
+        """Construtor da classe Board. Recebe uma matriz que representa o tabuleiro."""
+        self.matrix = matrix
+        self.rows, self.cols = matrix.shape
+        self.regions = np.unique(matrix)
+
         pass
     
+    def adjacent_regions_to_square(self, row:int, col:int) -> list:
+        """Devolve uma lista das regiões que fazem fronteira com o quadrado no argumento."""
+
+        adjacent_regions = []
+
+        for i in range(row-1, row+2):
+            for j in range(col-1, col+2):
+                if i >= 0 and i < self.rows and j >= 0 and j < self.cols and (i != row or j != col):
+                        adjacent_regions.append(self.matrix[i][j])
+
+        return sorted(adjacent_regions)
+
+    def adjacent_regions_to_regions(self, region:int) -> list:
+        """Devolve uma lista das regiões que fazem fronteira com a região enviada no argumento."""
+        
+        regions = self.matrix
+
+        adjacent_regions = []
+
+        for i in range(self.rows):
+            for j in range(self.cols):
+                if regions[i][j] == region:
+                    for element in self.adjacent_regions_to_square(i, j):
+                        if element not in adjacent_regions and element != region:
+                            adjacent_regions.append(element)
+
+        return sorted(adjacent_regions)
+
+
     def adjacent_positions(self, row:int, col:int) -> list:
         """Devolve as posições adjacentes à região, em todas as direções, incluindo diagonais."""
         #TODO
@@ -60,6 +92,7 @@ class Board:
                 row = line.strip().split()
                 lines.append(row)
         matrix = np.array(lines)
+        matrix = matrix.astype(int)
         return Board(matrix)
     
 
