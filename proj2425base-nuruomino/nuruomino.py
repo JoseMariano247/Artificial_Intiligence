@@ -2,9 +2,14 @@
 # Devem alterar as classes e funções neste ficheiro de acordo com as instruções do enunciado.
 # Além das funções e classes sugeridas, podem acrescentar outras que considerem pertinentes.
 
-# Grupo 00:
-# 00000 Nome1
-# 00000 Nome2
+from sys import stdin
+import numpy as np 
+from search import Problem, Node
+
+# Grupo 4:
+# 102451 José Mariano
+# 102994 Maria Maló
+
 
 class NuruominoState:
     state_id = 0
@@ -49,8 +54,14 @@ class Board:
             > from sys import stdin
             > line = stdin.readline().split()
         """
-        #TODO
-        pass    
+        lines = []
+        for line in stdin:
+            if line.strip(): 
+                row = line.strip().split()
+                lines.append(row)
+        matrix = np.array(lines)
+        return Board(matrix)
+    
 
     # TODO: outros metodos da classe Board
 
