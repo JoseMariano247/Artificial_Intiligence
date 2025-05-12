@@ -32,49 +32,53 @@ class Board:
         self.matrix = matrix
         self.rows, self.cols = matrix.shape
         self.regions = np.unique(matrix)
-
         pass
     
+
     def adjacent_regions_to_square(self, row:int, col:int) -> list:
         """Devolve uma lista das regiões que fazem fronteira com o quadrado no argumento."""
-
         adjacent_regions = []
-
         for i in range(row-1, row+2):
             for j in range(col-1, col+2):
                 if i >= 0 and i < self.rows and j >= 0 and j < self.cols and (i != row or j != col):
                         adjacent_regions.append(self.matrix[i][j])
-
         return sorted(adjacent_regions)
 
+
     def adjacent_regions_to_regions(self, region:int) -> list:
-        """Devolve uma lista das regiões que fazem fronteira com a região enviada no argumento."""
-        
+        """Devolve uma lista das regiões que fazem fronteira com a região enviada no argumento."""       
         regions = self.matrix
-
         adjacent_regions = []
-
         for i in range(self.rows):
             for j in range(self.cols):
                 if regions[i][j] == region:
                     for element in self.adjacent_regions_to_square(i, j):
                         if element not in adjacent_regions and element != region:
                             adjacent_regions.append(element)
-
         return sorted(adjacent_regions)
 
 
-    def adjacent_positions(self, row:int, col:int) -> list:
+    def adjacent_positions(self, region:int) -> list:
         """Devolve as posições adjacentes à região, em todas as direções, incluindo diagonais."""
-        #TODO
-        pass
-
-    def adjacent_values(self, row:int, col:int) -> list:
+        positions = set()
+        for row in range(self.rows):
+            for col in range(self.cols):
+                if self.matrix[row][col] == region: 
+                    for i in range(row-1,row+2):
+                        for j in range(col-1,col+2):
+                            if 0 <= i < self.rows and 0 <= j < self.cols and  (i != row or j != col):
+                                if self.matrix[i][j] != region:
+                                    positions.add((i, j))
+        return list(sorted(positions))
+            
+    def adjacent_values(self, region:int) -> list:
         """Devolve os valores das celulas adjacentes à região, em todas as direções, incluindo diagonais."""
-        #TODO
-        pass
-    
-    
+        adj = self.adjacent_positions(region)
+        val = []
+        for r, c in adj:
+            val.append(self.matrix[r,c])
+        return val 
+
     @staticmethod
     def parse_instance():
         """Lê o test do standard input (stdin) que é passado como argumento
@@ -95,14 +99,18 @@ class Board:
         matrix = matrix.astype(int)
         return Board(matrix)
     
+#board = Board.parse_instance()
+#print(board.adjacent_regions_to_square(1,1))
+#print(board.adjacent_regions_to_regions(3))
 
     # TODO: outros metodos da classe Board
 
 class Nuruomino(Problem):
     def __init__(self, board: Board):
-        """O construtor especifica o estado inicial."""
-        #TODO
-        pass 
+        """O construtor especifica o estado inicial. Recebe um objeto da classe Board
+        que representa o tabuleiro inicial do problema."""
+        self.board = board
+        self.initial = NuruominoState(board)
 
     def actions(self, state: NuruominoState):
         """Retorna uma lista de ações que podem ser executadas a
@@ -116,7 +124,18 @@ class Nuruomino(Problem):
         das presentes na lista obtida pela execução de
         self.actions(state)."""
 
-        #TODO
+        #A certa altura, é necessário desenvolver um check para ver se a ação é válida
+        #e se não existe uma região adjacente à ação que já tenha sido preenchida. Também
+        #é necessário verificar se os valores no board a serem preenchidos correspondem à peça.
+
+        regions = self.board.matrix
+
+        for i in range(self.rows):
+            for j in range(self.cols):
+                if regions[i][j] == action[0] and [i, j] in action[1][1]:
+                    regions[i][j] = action[1][0]
+                    
+        
         pass 
         
 
