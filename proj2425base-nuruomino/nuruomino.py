@@ -11,6 +11,10 @@ from search import Problem, Node
 # 102994 Maria Maló
 
 
+#fazer um dicionário que a cada região, dá a coordenada. Assim, é facil
+#dar check nas acoes por regioes e poupa muito tempo computacional pq testa-se
+#de cada vez se a ação é válida ou não.
+
 class NuruominoState:
     state_id = 0
 
@@ -31,9 +35,18 @@ class Board:
         """Construtor da classe Board. Recebe uma matriz que representa o tabuleiro."""
         self.matrix = matrix
         self.rows, self.cols = matrix.shape
-        self.regions = np.unique(matrix)
+        aux_reg = np.unique(matrix)
+        self.regions = aux_reg[type(aux_reg) == int]
+        self.reg_to_coords = {}
+        for i in range(self.rows):
+            for j in range(self.cols):
+                reg = self.matrix[i, j]
+                if reg not in self.reg_to_coords:
+                    self.reg_to_coords[reg] = []
+                self.reg_to_coords[reg].append((i, j))
+        self.reg_to_coords = dict(sorted(self.reg_to_coords.items()))
+
         pass
-    
 
     def adjacent_regions_to_square(self, row:int, col:int) -> list:
         """Devolve uma lista das regiões que fazem fronteira com o quadrado no argumento."""
@@ -115,6 +128,7 @@ class Nuruomino(Problem):
     def actions(self, state: NuruominoState):
         """Retorna uma lista de ações que podem ser executadas a
         partir do estado passado como argumento."""
+        #action = [2, [L, [[0,0], [0,1], [1,0], [2,0]]]] 
         #TODO
         pass 
 
