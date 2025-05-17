@@ -46,15 +46,14 @@ class Board:
                 self.reg_to_coords[reg].append((i, j))
         self.reg_to_coords = dict(sorted(self.reg_to_coords.items()))
 
-        pass
 
     def adjacent_regions_to_square(self, row:int, col:int) -> list:
         """Devolve uma lista das regiões que fazem fronteira com o quadrado no argumento."""
-        adjacent_regions = []
+        adjacent_regions = set()
         for i in range(row-1, row+2):
             for j in range(col-1, col+2):
                 if i >= 0 and i < self.rows and j >= 0 and j < self.cols and (i != row or j != col):
-                        adjacent_regions.append(self.matrix[i][j])
+                        adjacent_regions.add(self.matrix[i][j])
         return sorted(adjacent_regions)
 
 
@@ -68,7 +67,7 @@ class Board:
                     for element in self.adjacent_regions_to_square(i, j):
                         if element not in adjacent_regions and element != region:
                             adjacent_regions.append(element)
-        return sorted(adjacent_regions)
+        return list(sorted(adjacent_regions))
 
 
     def adjacent_positions(self, region:int) -> list:
@@ -111,10 +110,16 @@ class Board:
         matrix = np.array(lines)
         matrix = matrix.astype(int)
         return Board(matrix)
-    
-#board = Board.parse_instance()
-#print(board.adjacent_regions_to_square(1,1))
-#print(board.adjacent_regions_to_regions(3))
+
+#### debugging    
+board = Board.parse_instance()
+print(board.matrix)
+print(board.reg_to_coords)
+print(board.regions)
+print(board.adjacent_regions_to_square(1,1))
+print(board.adjacent_regions_to_regions(3))
+print(board.adjacent_values(3))
+print(board.adjacent_positions(3))
 
     # TODO: outros metodos da classe Board
 
@@ -154,11 +159,20 @@ class Nuruomino(Problem):
         
 
     def goal_test(self, state: NuruominoState):
-        """Retorna True se e só se o estado passado como argumento é
-        um estado objetivo. Deve verificar se todas as posições do tabuleiro
-        estão preenchidas de acordo com as regras do problema."""
-        #TODO
-        pass 
+        board = state.board
+        matrix = board.matrix
+        pieces = {'L', 'I', 'T', 'S'}
+        for region, coords in board.reg_to_coords.items():
+            piece_in_region = False
+            for i, j in coords:
+                if matrix[i][j] in pieces: # if region has at least one piece 
+                    piece_in_region = True
+                    break  
+            if not piece_in_region: # if region has no  piece 
+                return False  
+        return True
+
+         
 
     def h(self, node: Node):
         """Função heuristica utilizada para a procura A*."""
