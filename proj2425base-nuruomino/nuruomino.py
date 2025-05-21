@@ -33,10 +33,10 @@ class Board:
 
     def __init__(self, matrix):
         """Construtor da classe Board. Recebe uma matriz que representa o tabuleiro."""
-        self.matrix = matrix
-        self.rows, self.cols = matrix.shape
-        aux_reg = np.unique(matrix)
-        self.regions = aux_reg[type(aux_reg) == int]
+        self.matrix = matrix # board is represented as a matrix
+        self.rows, self.cols = matrix.shape # board size
+        #aux_reg = np.unique(matrix)
+        #self.regions = aux_reg[type(aux_reg) == int]
         self.reg_to_coords = {}
         for i in range(self.rows):
             for j in range(self.cols):
@@ -44,26 +44,26 @@ class Board:
                 if reg not in self.reg_to_coords:
                     self.reg_to_coords[reg] = []
                 self.reg_to_coords[reg].append((i, j))
-        self.reg_to_coords = dict(sorted(self.reg_to_coords.items()))
+        self.reg_to_coords = dict(sorted(self.reg_to_coords.items())) #dictionary with regions as keys and coordinates as values
 
 
     def adjacent_regions_to_square(self, row:int, col:int) -> list:
         """Devolve uma lista das regiões que fazem fronteira com o quadrado no argumento."""
-        adjacent_regions = set()
+        adjacent_regions = set() # we use set as it does not allow repeated values
         for i in range(row-1, row+2):
             for j in range(col-1, col+2):
                 if i >= 0 and i < self.rows and j >= 0 and j < self.cols and (i != row or j != col):
                         adjacent_regions.add(self.matrix[i][j])
-        return sorted(adjacent_regions)
+        return list(sorted(adjacent_regions))
 
 
     def adjacent_regions_to_regions(self, region:int) -> list:
         """Devolve uma lista das regiões que fazem fronteira com a região enviada no argumento."""       
-        adjacent_regions = []
+        adjacent_regions = set()
         for row, col in self.reg_to_coords[region]:
             for element in self.adjacent_regions_to_square(row, col):
                  if element != region and element not in adjacent_regions:
-                    adjacent_regions.append(element)
+                    adjacent_regions.add(element)
         return list(sorted(adjacent_regions))
 
 
@@ -83,8 +83,8 @@ class Board:
         """Devolve os valores das celulas adjacentes à região, em todas as direções, incluindo diagonais."""
         adj = self.adjacent_positions(region)
         val = []
-        for r, c in adj:
-            val.append(self.matrix[r,c])
+        for row, col in adj:
+            val.append(self.matrix[row,col])
         return val 
 
     @staticmethod
@@ -108,16 +108,15 @@ class Board:
         return Board(matrix)
 
 #### debugging    
-"""
+
+
 board = Board.parse_instance()
 print(board.matrix)
 print(board.reg_to_coords)
-print(board.regions)
 print(board.adjacent_regions_to_square(1,1))
 print(board.adjacent_regions_to_regions(3))
 print(board.adjacent_values(3))
 print(board.adjacent_positions(3))
-"""
 
 class Nuruomino(Problem):
     def __init__(self, board: Board):
@@ -154,26 +153,28 @@ class Nuruomino(Problem):
         pass 
         
 
-    def goal_test(self, state: NuruominoState):
+    def goal_test(self, state: NuruominoState): 
+        # This function states if the goal was reached, by checking if all regions are filled.
         board = state.board
         matrix = board.matrix
-        pieces = {'L', 'I', 'T', 'S'}
+        pieces = {'L', 'I', 'T', 'S'} # allowed pieces in the game
         for region, coords in board.reg_to_coords.items():
             piece_in_region = False
             for i, j in coords:
                 if matrix[i][j] in pieces: # if region has at least one piece 
                     piece_in_region = True
                     break  
-            if not piece_in_region: # if region has no piece 
+            if not piece_in_region: # if region has no piece return false 
                 return False  
         return True
 
     def h(self, node: Node):
         """Função heuristica utilizada para a procura A*."""
+        # This function measures how close a node is to the goal, measuring the number of regions to be filled yet.
         board = node.state.board
         matrix = board.matrix
         pieces = {'L', 'I', 'T', 'S'}
-        empty_regions = 0
+        unfilled_regions = 0
         for region, coords in board.reg_to_coords.items():
             piece_in_region = False
             for i, j in coords:
@@ -181,5 +182,5 @@ class Nuruomino(Problem):
                     piece_in_region = True
                     break
             if not piece_in_region:
-                empty_regions += 1 
-        return  empty_regions # number of empty regions in the board
+                unfilled_regions += 1 
+        return  unfilled_regions # number of unfilled regions in the board 
