@@ -20,8 +20,8 @@ class NuruominoState:
 
     def __init__(self, board):
         self.board = board
-        self.id = Nuroumino.state_id
-        Nuroumino.state_id += 1
+        self.id = Nuruomino.state_id
+        Nuruomino.state_id += 1
 
     def __lt__(self, other):
         """ Este método é utilizado em caso de empate na gestão da lista
@@ -59,29 +59,25 @@ class Board:
 
     def adjacent_regions_to_regions(self, region:int) -> list:
         """Devolve uma lista das regiões que fazem fronteira com a região enviada no argumento."""       
-        regions = self.matrix
         adjacent_regions = []
-        for i in range(self.rows):
-            for j in range(self.cols):
-                if regions[i][j] == region:
-                    for element in self.adjacent_regions_to_square(i, j):
-                        if element not in adjacent_regions and element != region:
-                            adjacent_regions.append(element)
+        for row, col in self.reg_to_coords[region]:
+            for element in self.adjacent_regions_to_square(row, col):
+                 if element != region and element not in adjacent_regions:
+                    adjacent_regions.append(element)
         return list(sorted(adjacent_regions))
 
 
-    def adjacent_positions(self, region:int) -> list:
+    def adjacent_positions(self, region: int) -> list:
         """Devolve as posições adjacentes à região, em todas as direções, incluindo diagonais."""
         positions = set()
-        for row in range(self.rows):
-            for col in range(self.cols):
-                if self.matrix[row][col] == region: 
-                    for i in range(row-1,row+2):
-                        for j in range(col-1,col+2):
-                            if 0 <= i < self.rows and 0 <= j < self.cols and  (i != row or j != col):
-                                if self.matrix[i][j] != region:
-                                    positions.add((i, j))
+        for row, col in self.reg_to_coords[region]:
+            for i in range(row - 1, row + 2):
+                for j in range(col - 1, col + 2):
+                    if 0 <= i < self.rows and 0 <= j < self.cols and (i != row or j != col):
+                        if self.matrix[i][j] != region:
+                            positions.add((i, j))
         return list(sorted(positions))
+
             
     def adjacent_values(self, region:int) -> list:
         """Devolve os valores das celulas adjacentes à região, em todas as direções, incluindo diagonais."""
@@ -112,6 +108,7 @@ class Board:
         return Board(matrix)
 
 #### debugging    
+"""
 board = Board.parse_instance()
 print(board.matrix)
 print(board.reg_to_coords)
@@ -120,8 +117,7 @@ print(board.adjacent_regions_to_square(1,1))
 print(board.adjacent_regions_to_regions(3))
 print(board.adjacent_values(3))
 print(board.adjacent_positions(3))
-
-    # TODO: outros metodos da classe Board
+"""
 
 class Nuruomino(Problem):
     def __init__(self, board: Board):
@@ -168,13 +164,22 @@ class Nuruomino(Problem):
                 if matrix[i][j] in pieces: # if region has at least one piece 
                     piece_in_region = True
                     break  
-            if not piece_in_region: # if region has no  piece 
+            if not piece_in_region: # if region has no piece 
                 return False  
         return True
 
-         
-
     def h(self, node: Node):
         """Função heuristica utilizada para a procura A*."""
-        # TODO
-        pass
+        board = node.state.board
+        matrix = board.matrix
+        pieces = {'L', 'I', 'T', 'S'}
+        empty_regions = 0
+        for region, coords in board.reg_to_coords.items():
+            piece_in_region = False
+            for i, j in coords:
+                if matrix[i][j] in pieces:
+                    piece_in_region = True
+                    break
+            if not piece_in_region:
+                empty_regions += 1 
+        return  empty_regions # number of empty regions in the board
