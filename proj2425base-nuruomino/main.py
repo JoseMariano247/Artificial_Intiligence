@@ -9,7 +9,13 @@ import nuruomino
 print("Exemplo 1: \n")
 
 board = nuruomino.Board.parse_instance()
-print(board.adjacent_regions_to_regions(1))
-print(board.adjacent_regions_to_regions(3))
+
+#print(board.aux_list_coords(1, 1))
+
+problem = nuruomino.Nuruomino(board)
+
+#problem.actions()
+
+print(board.reg_to_values)
 
 print("\n \nExemplo 2: \n")
