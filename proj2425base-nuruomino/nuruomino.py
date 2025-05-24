@@ -20,8 +20,8 @@ class NuruominoState:
 
     def __init__(self, board):
         self.board = board
-        self.id = Nuruomino.state_id
-        Nuruomino.state_id += 1
+        self.id = NuruominoState.state_id
+        NuruominoState.state_id += 1
 
     def __lt__(self, other):
         """ Este método é utilizado em caso de empate na gestão da lista
@@ -81,6 +81,12 @@ class Board:
         }
         
         self.size = len(self.possible_pieces)
+
+    def copy(self):
+        """Creates a deep copy of the board object."""
+        new_matrix = np.copy(self.matrix)
+        return Board(new_matrix)
+    
 
         self.reg_to_values = {}
         for i in range(self.rows):
@@ -422,15 +428,18 @@ class Nuruomino(Problem):
         #A certa altura, é necessário desenvolver um check para ver se a ação é válida
         #e se não existe uma região adjacente à ação que já tenha sido preenchida. Também
         #é necessário verificar se os valores no board a serem preenchidos correspondem à peça.
+        if action in self.possible_actions:
+            region = action[0]
+            piece = action[1]
+            piece_coord = action[2]
+            board_updated = state.board.coords_to_reg.copy()
 
-        regions = self.board.matrix
+            for i, j in piece_coord:
+                board_updated[(i, j)] = piece
 
-        for i in range(self.rows):
-            for j in range(self.cols):
-                if regions[i][j] == action[0] and [i, j] in action[1][1]:
-                    regions[i][j] = action[1][0]
-                    
-        pass 
+            new_board = Board(board_updated)
+            return NuruominoState(new_board)
+
         
 
     def goal_test(self, state: NuruominoState): 
@@ -438,7 +447,7 @@ class Nuruomino(Problem):
         board = state.board
         matrix = board.matrix
         pieces = {'L', 'I', 'T', 'S'} # allowed pieces in the game
-        for region, coords in board.reg_to_coords.items():
+        for region, coords in board.coords_to_reg.items():
             piece_in_region = False
             for i, j in coords:
                 if matrix[i][j] in pieces: # if region has at least one piece 
@@ -464,8 +473,13 @@ class Nuruomino(Problem):
             if not piece_in_region:
                 unfilled_regions += 1 
         return  unfilled_regions # number of unfilled regions in the board 
-    
 
 
+board = Board.parse_instance()
+state = NuruominoState(board)
 
-
+problem = Nuruomino(board)
+action = [1, 'L', [(0, 0), (1, 0), (1, 1), (1, 2)]]
+problem.possible_actions = [action]
+new_state = problem.result(state, action)
+print(new_state)
