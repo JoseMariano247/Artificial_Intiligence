@@ -53,9 +53,6 @@ class Board:
             for j in range(self.cols):
                 reg = self.matrix[i, j]
                 self.coords_to_reg[(i, j)] = reg
-
-        
-
         self.possible_pieces = {
             0: ["L", [[0, 0], [1, 0], [2, 0], [2, 1]]],
             1: ["L", [[2, 0], [0, 1], [1, 1], [2, 1]]],
@@ -75,9 +72,9 @@ class Board:
             15: ["T" ,[[0, 0], [0, 2], [1, 1], [0, 2]]],
             16: ["I" ,[[0, 0], [0, 1], [0, 2], [0, 3]]],
             17: ["I" ,[[0, 0], [1, 0], [2, 0], [3, 0]]],
-        }
-        
+        }        
         self.size = len(self.possible_pieces)
+
 
     def adjacent_regions_to_square(self, row:int, col:int) -> list:
         """Devolve uma lista das regiões que fazem fronteira com o quadrado no argumento."""
@@ -321,16 +318,17 @@ class Nuruomino(Problem):
         #A certa altura, é necessário desenvolver um check para ver se a ação é válida
         #e se não existe uma região adjacente à ação que já tenha sido preenchida. Também
         #é necessário verificar se os valores no board a serem preenchidos correspondem à peça.
+        if action in self.possible_actions:
+            region = action[0]
+            piece = action[1]
+            piece_coord = action[2]
+            board_updated = state.board.coords_to_reg.copy()
 
-        regions = self.board.matrix
+            for i, j in piece_coord:
+                board_updated[(i, j)] = piece
 
-        for i in range(self.rows):
-            for j in range(self.cols):
-                if regions[i][j] == action[0] and [i, j] in action[1][1]:
-                    regions[i][j] = action[1][0]
-                    
-        pass 
-        
+            new_board = Board(board_updated)
+            return NuruominoState(new_board)
 
     def goal_test(self, state: NuruominoState):
         board = state.board
