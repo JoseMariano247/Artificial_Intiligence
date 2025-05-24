@@ -216,7 +216,7 @@ class Nuruomino(Problem):
                         
                         i = 0
                         for element in piece:
-                            if self.board.coords_to_reg[(element[0]+min_row, element[1]+min_col)] == store_reg and type_piece not in self.adjacent_regions_to_square(element[0]+dis_ver, element[1]+dis_hor): #<- copiar esta parte
+                            if self.board.coords_to_reg[(element[0]+min_row, element[1]+min_col)] == store_reg and type_piece not in self.adjacent_regions_to_square(element[0]+min_row, element[1]+min_col): #<- copiar esta parte
                                 i += 1
                         if i == 4:
                             action = [region, self.board.possible_pieces[l]]
@@ -229,9 +229,8 @@ class Nuruomino(Problem):
                                 i = 0
                                 for element in piece:
                   
-                                    if self.board.coords_to_reg[(element[0]+min_row+disy, element[1]+min_col+disx)] == store_reg:
+                                    if self.board.coords_to_reg[(element[0]+min_row+disy, element[1]+min_col+disx)] == store_reg and type_piece not in self.adjacent_regions_to_square(element[0]+min_row+disy, element[1]+min_col+disx):
                                         i += 1
-                                        print(i)
 
                                 if i == 4:
                                     action = [region, self.board.possible_pieces[l]]
@@ -245,7 +244,7 @@ class Nuruomino(Problem):
                         piece = self.board.possible_pieces[j + 8][1]
                         i = 0
                         for element in piece:
-                            if self.board.coords_to_reg[(element[0]+min_row, element[1]+min_col)] == store_reg:
+                            if self.board.coords_to_reg[(element[0]+min_row, element[1]+min_col)] == store_reg and type_piece not in self.adjacent_regions_to_square(element[0]+min_row, element[1]+min_col):
                                 i += 1
                         if i == 4:
                             action = [region, self.board.possible_pieces[j + 8]]
@@ -258,7 +257,7 @@ class Nuruomino(Problem):
                                 piece = self.board.possible_pieces[j + 8][1]
                                 i = 0
                                 for element in piece:
-                                    if self.board.coords_to_reg[(element[0]+min_row+disy, element[1]+min_col+disx)] == store_reg:
+                                    if self.board.coords_to_reg[(element[0]+min_row+disy, element[1]+min_col+disx)] == store_reg and type_piece not in self.adjacent_regions_to_square(element[0]+min_row+disy, element[1]+min_col+disx):
                                         i += 1
                                         print(i)
                                 if i == 4:
@@ -271,7 +270,7 @@ class Nuruomino(Problem):
                     piece = self.board.possible_pieces[16][1]
                     i = 0
                     for element in piece:
-                        if self.board.coords_to_reg[(element[0]+min_row, element[1]+min_col)] == store_reg:
+                        if self.board.coords_to_reg[(element[0]+min_row, element[1]+min_col)] == store_reg and type_piece not in self.adjacent_regions_to_square(element[0]+min_row, element[1]+min_col):
                             i += 1
                     if i == 4:
                         action = [region, self.board.possible_pieces[16]]
@@ -282,7 +281,7 @@ class Nuruomino(Problem):
                     piece = self.board.possible_pieces[17][1]
                     i = 0
                     for element in piece:
-                        if self.board.coords_to_reg[(element[0]+min_row, element[1]+min_col)] == store_reg:
+                        if self.board.coords_to_reg[(element[0]+min_row, element[1]+min_col)] == store_reg and type_piece not in self.adjacent_regions_to_square(element[0]+min_row, element[1]+min_col):
                             i += 1
                     if i == 4:
                         action = [region, self.board.possible_pieces[17]]
@@ -294,7 +293,7 @@ class Nuruomino(Problem):
                             piece = self.board.possible_pieces[16][1]
                             i = 0
                             for element in piece:
-                                if self.board.coords_to_reg[(element[0]+min_row+disy, element[1]+min_col+disx)] == store_reg:
+                                if self.board.coords_to_reg[(element[0]+min_row+disy, element[1]+min_col+disx)] == store_reg and type_piece not in self.adjacent_regions_to_square(element[0]+min_row+disy, element[1]+min_col+disx):
                                     i += 1
                             if i == 4:
                                 action = [region, self.board.possible_pieces[16]]
@@ -304,7 +303,7 @@ class Nuruomino(Problem):
                             piece = self.board.possible_pieces[17][1]
                             i = 0
                             for element in piece:
-                                if self.board.coords_to_reg[(element[0]+min_row+disy, element[1]+min_col+disx)] == store_reg:
+                                if self.board.coords_to_reg[(element[0]+min_row+disy, element[1]+min_col+disx)] == store_reg and type_piece not in self.adjacent_regions_to_square(element[0]+min_row+disy, element[1]+min_col+disx):
                                     i += 1
                             if i == 4:
                                 action = [region, self.possible_pieces[17]]
